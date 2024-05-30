@@ -4,6 +4,7 @@ import { useRouter } from 'next/router';
 function home() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
   const router = useRouter();
 
   const handleEmailChange = (e) => {
@@ -15,16 +16,36 @@ function home() {
   };
 
   // Handle form submission
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    router.push ('/ManDashboard')
+    setError('');
 
+    try {
+      const response = await fetch('/api/ManLogin', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({email, password }),
+      });
 
-    // Perform login logic here (e.g., call an authentication API)
-    console.log('Email:', email);
-    console.log('Password:', password);
+      if (!response.ok) {
+        throw new Error('Failed to authenticate');
+        // console.log("login failed");
+      }
 
-    // Reset form fields
+      const data = await response.json();
+
+      // Assuming the response contains a success flag or token
+      if (data.success) {
+        router.push('/ManDashboard');
+      } else {
+        setError('Invalid email or password');
+      }
+    } catch (error) {
+      console.error('Login error:', error);
+      setError('An error occurred. Please try again.');
+    }
     setEmail('');
     setPassword('');
   };
@@ -53,7 +74,7 @@ function home() {
           required
         />
       </div>
-
+      {error && <p style={{ color: 'red' }}>{error}</p>}
       <button type="submit">Login</button>
     </form>
     </div>

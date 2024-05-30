@@ -5,6 +5,8 @@ function page() {
     <div>
       <h1>
         click the link to navigate <a href='/hospital'>navigate</a>
+        click the link to api <a href='/EmployeesPage'>api</a> <br/>
+        
       </h1>
     </div>
   )
